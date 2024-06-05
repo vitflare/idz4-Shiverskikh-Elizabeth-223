@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  db-1:
+    image: postgres:14.4-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: kpo-idz4
+      POSTGRES_PASSWORD: kpo-idz4
+      POSTGRES_DB: db-1
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db-2:
+    image: postgres:14.4-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: kpo-idz4
+      POSTGRES_PASSWORD: kpo-idz4
+      POSTGRES_DB: db-2
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  goose-1:
+    image: ghcr.io/kukymbr/goose-docker:latest
+    depends_on:
+      db-1:
+        condition: service_healthy
+    volumes:
+      - ./usersMigrations:/migrations
+    environment:
+      GOOSE_DRIVER: postgres
+      GOOSE_DBSTRING: "host=db-1 user=kpo-idz4 password=kpo-idz4 dbname=db-1 sslmode=disable"
+
+  goose-2:
+    image: ghcr.io/kukymbr/goose-docker:latest
+    depends_on:
+      db-2:
+        condition: service_healthy
+    volumes:
+      - ./ordersMigrations:/migrations
+    environment:
+      GOOSE_DRIVER: postgres
+      GOOSE_DBSTRING: "host=db-2 user=kpo-idz4 password=kpo-idz4 dbname=db-2 sslmode=disable"
