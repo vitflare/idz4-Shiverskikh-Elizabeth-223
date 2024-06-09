@@ -1,5 +1,6 @@
 package com.idz4.ordersservice.core.services;
 
+import com.idz4.ordersservice.api.responses.CreateOrderResponse;
 import com.idz4.ordersservice.core.entities.Orders;
 import com.idz4.ordersservice.core.interfaces.IOrdersService;
 import com.idz4.ordersservice.repositories.OrderRepository;
@@ -16,7 +17,9 @@ public class OrdersService implements IOrdersService {
         return orderRepository.findById(id).orElse(null);
     }
 
-    public Orders createOrder(Orders order) {
-        return orderRepository.save(order);
+    public CreateOrderResponse createOrder(Orders order) {
+        var response = new CreateOrderResponse();
+        response.setId(orderRepository.save(order).getId());
+        return response;
     }
 }

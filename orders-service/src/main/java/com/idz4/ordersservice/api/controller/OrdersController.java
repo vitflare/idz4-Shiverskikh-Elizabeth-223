@@ -36,7 +36,7 @@ public class OrdersController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createOrder(@RequestBody CreateOrderRequest requestBody) {
+    public ResponseEntity<?> createOrder(@RequestBody CreateOrderRequest requestBody) {
         if (isBlank(requestBody.getStation_from()) || isBlank(requestBody.getStation_to())) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("All fields must be filled");
         }
@@ -54,8 +54,7 @@ public class OrdersController {
         order.setStation_from_id(departureStation.getId());
         order.setStation_to_id(arrivalStation.getId());
         order.setStatus(1L);
-        ordersService.createOrder(order);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Order is created successfully with id: " + order.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(ordersService.createOrder(order));
     }
 
     private boolean isBlank(String str) {

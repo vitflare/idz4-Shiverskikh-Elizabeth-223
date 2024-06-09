@@ -38,7 +38,7 @@ public class UsersController {
                     "numbers, and at least one special character (@, $, !, %, *, ?, &).");
         }
         usersService.registerUser(request);
-        return ResponseEntity.status(HttpStatus.OK).body("User created successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully");
     }
 
     @PostMapping("/authorize")
@@ -51,7 +51,7 @@ public class UsersController {
         }
         Users user = usersService.getUserByEmail(request.getEmail()).get();
         if (!Integer.toString(request.getPassword().hashCode()).equals(user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Wrong password");
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Wrong password");
         }
         var response = usersService.createSession(user);
         return ResponseEntity.status(HttpStatus.OK).body(response);
