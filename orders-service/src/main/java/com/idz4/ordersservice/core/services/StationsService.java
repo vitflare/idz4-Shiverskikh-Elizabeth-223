@@ -1,10 +1,7 @@
 package com.idz4.ordersservice.core.services;
 
-import com.idz4.ordersservice.core.entities.Orders;
 import com.idz4.ordersservice.core.entities.Stations;
-import com.idz4.ordersservice.core.interfaces.IOrdersService;
 import com.idz4.ordersservice.core.interfaces.IStationsService;
-import com.idz4.ordersservice.repositories.OrderRepository;
 import com.idz4.ordersservice.repositories.StationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
