@@ -1,0 +1,13 @@
+server:
+  port: 9002
+
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost:5433}/db-2
+    driver-class-name: org.postgresql.Driver
+    username: kpo-idz4
+    password: kpo-idz4
+  jpa:
+    hibernate:
+      ddl-auto: none
