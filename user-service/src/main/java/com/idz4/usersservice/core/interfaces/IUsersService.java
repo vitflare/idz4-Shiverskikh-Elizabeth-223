@@ -12,6 +12,7 @@ public interface IUsersService {
     void addUserToSessions(Sessions session);
     TokenResponse createSession(Users user);
     Boolean checkIfUserExists(String email);
+    Boolean checkIfUserExistsByNickName(String nickname);
     Optional<Users> getUserByEmail(String email);
     Optional<Users> getUserByNickname(String nickname);
     Optional<Sessions> getSessionByToken(String token);

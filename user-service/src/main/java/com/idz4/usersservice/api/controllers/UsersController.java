@@ -32,6 +32,9 @@ public class UsersController {
         if (usersService.checkIfUserExists(request.getEmail())) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("User with this email already exists");
         }
+        if (usersService.checkIfUserExistsByNickName(request.getNickname())) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("User with this nickname already exists");
+        }
         if (!Validator.isValidInformation(request.getEmail(), request.getPassword())) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("The email must contain the characters “@”, “.”.\n" +
                     "The password must be at least 8 characters long and include both uppercase and lowercase letters, " +

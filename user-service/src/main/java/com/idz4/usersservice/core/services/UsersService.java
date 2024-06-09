@@ -51,6 +51,11 @@ public class UsersService implements IUsersService {
         return usersRepository.findByEmail(email).isPresent();
     }
 
+    @Override
+    public Boolean checkIfUserExistsByNickName(String nickname) {
+        return usersRepository.findByNickname(nickname).isPresent();
+    }
+
     public Optional<Users> getUserByEmail(String email) {
         return usersRepository.findByEmail(email);
     }
