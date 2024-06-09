@@ -10,6 +10,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateOrderRequest {
-    private Long station_to_id;
-    private Long station_from_id;
+    private String station_to;
+    private String station_from;
 }

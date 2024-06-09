@@ -39,6 +39,11 @@ services:
     environment:
       GOOSE_DRIVER: postgres
       GOOSE_DBSTRING: "host=db-1 user=kpo-idz4 password=kpo-idz4 dbname=db-1 sslmode=disable"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   goose-2:
     image: ghcr.io/kukymbr/goose-docker:latest
@@ -50,3 +55,29 @@ services:
     environment:
       GOOSE_DRIVER: postgres
       GOOSE_DBSTRING: "host=db-2 user=kpo-idz4 password=kpo-idz4 dbname=db-2 sslmode=disable"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  users-service:
+    build:
+      context: ./user-service
+    depends_on:
+      - goose-1
+    ports:
+      - "9001:9001"
+    environment:
+      DB_HOST: db-1:5432
+
+  orders-service:
+    build:
+      context: ./orders-service
+    depends_on:
+      - goose-2
+    ports:
+      - "9002:9002"
+    environment:
+      DB_HOST: db-2:5432
+      USER_SERVICE_ENDPOINT: users-service:9001

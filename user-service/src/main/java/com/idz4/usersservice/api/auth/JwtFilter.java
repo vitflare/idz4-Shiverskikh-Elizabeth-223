@@ -36,8 +36,17 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
+
+        Claims claims = null;
+        try {
+            claims = jwtService.extractAllClaims(token);
+        } catch (Exception e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
+            response.getWriter().write("Invalid JWT token");
+            return;
+        }
+
         request.setAttribute("token", token);
-        Claims claims = jwtService.extractAllClaims(token);
 
         if (claims != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             Optional<Users> optionalUser = userService.getUserByNickname(claims.get("nickname", String.class));

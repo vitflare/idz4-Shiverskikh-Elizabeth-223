@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,6 +29,9 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private HttpHeaders headers;
 
+    @Value("${userService.endpoint}")
+    private String userServiceEndpoint;
+
 
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws java.io.IOException, jakarta.servlet.ServletException {
@@ -39,14 +43,21 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
-        Claims claims = jwtService.extractAllClaims(token);
+        Claims claims = null;
+        try {
+            claims = jwtService.extractAllClaims(token);
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Invalid JWT token");
+            return;
+        }
 
         if (claims != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             RestTemplate restTemplate = new RestTemplate();
             headers.set("Authorization", "Bearer " + token);
             HttpEntity<String> entity = new HttpEntity<>(headers);
             ResponseEntity<Users> resp = restTemplate.exchange(
-                    "http://localhost:9001/users/me",
+                    "http://" + userServiceEndpoint + "/users/me",
                     HttpMethod.GET,
                     entity,
                     Users.class);

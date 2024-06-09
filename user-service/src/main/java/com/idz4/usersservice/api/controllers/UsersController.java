@@ -26,12 +26,16 @@ public class UsersController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegisterRequest request) {
+        if (isBlank(request.getEmail()) || isBlank(request.getPassword()) || isBlank(request.getNickname())) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("All fields must be filled");
+        }
         if (usersService.checkIfUserExists(request.getEmail())) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("User with this email already exists");
         }
         if (!Validator.isValidInformation(request.getEmail(), request.getPassword())) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("The email must contain the characters “@”, “.”.\n" +
-                    "The password must be at least 8 characters long and include both uppercase and lowercase letters, numbers, and special characters.");
+                    "The password must be at least 8 characters long and include both uppercase and lowercase letters, " +
+                    "numbers, and at least one special character (@, $, !, %, *, ?, &).");
         }
         usersService.registerUser(request);
         return ResponseEntity.status(HttpStatus.OK).body("User created successfully");
@@ -39,6 +43,9 @@ public class UsersController {
 
     @PostMapping("/authorize")
     public ResponseEntity<?> authorizeUser(@RequestBody AuthorizeRequest request) {
+        if (isBlank(request.getEmail()) || isBlank(request.getPassword())) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("All fields must be filled");
+        }
         if (!usersService.checkIfUserExists(request.getEmail())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with such email not found");
         }
@@ -66,5 +73,9 @@ public class UsersController {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+    }
+
+    private boolean isBlank(String str) {
+        return str == null || str.isBlank();
     }
 }
